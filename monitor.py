@@ -8,7 +8,7 @@ from observer import observer
 
 
 class FileMonitorHandler(FileSystemEventHandler):
-    def __init__(self, directory, suffix, keywords, bot_api, alert_cd=60):
+    def __init__(self, directory, suffix, keywords, bot_api, name, alert_cd=60):
         self.directory = directory
         self.keywords = keywords
         self.bot_api = bot_api
@@ -17,6 +17,7 @@ class FileMonitorHandler(FileSystemEventHandler):
         self.suffix = suffix
         self.last_seeks = dict()
         self.init()
+        self.name = name
 
     def init(self):
         for filename in os.listdir(self.directory):
@@ -71,9 +72,10 @@ class FileMonitorHandler(FileSystemEventHandler):
             for keyword in self.keywords:
                 if keyword in line:
                     file_path = os.path.join(self.directory, filename)
-                    error_message = u'[%s] 发生告警！错误日志[%s]' % (file_path, line)
+                    error_message = u'[%s][%s] 发生告警！错误日志[%s]' % (self.name, file_path, line)
                     errors.append(error_message)
-        self.send_alert_message('\n'.join(errors))
+        if errors:
+            self.send_alert_message('\n'.join(errors))
 
     def run(self):
         observer.schedule(event_handler=self, path=self.directory)

@@ -13,6 +13,7 @@ for task in config['TASKS']:
         bot_api=config.get('BOT_API'),
         alert_cd=config['ALERT_CD'],
         suffix=task['suffix'],
+        name=task['name'],
     )
     file_monitor.run()
 
